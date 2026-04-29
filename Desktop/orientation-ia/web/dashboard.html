@@ -1,0 +1,500 @@
+﻿<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="theme-color" content="#00D1FF" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="icon" href="/icon-192.png" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Orientation IA - Live</title>
+  <style>
+    :root {
+      --bg:#05070b; --bg2:#0b1020; --card:rgba(14,20,32,.88); --line:rgba(148,163,184,.15);
+      --ink:#eef3ff; --muted:#95a3c3; --up:#2ee59d; --down:#ff5a79; --accent:#45d7ff; --accent2:#9eeeff;
+    }
+    *{box-sizing:border-box}
+    html,body{min-height:100%}
+    body{margin:0;font-family:"Segoe UI",system-ui,sans-serif;background:
+      radial-gradient(circle at 12% 8%, rgba(69,215,255,.14), transparent 30%),
+      radial-gradient(circle at 88% 0%, rgba(138,168,255,.12), transparent 30%),
+      linear-gradient(180deg,var(--bg) 0%, var(--bg2) 100%);color:var(--ink);line-height:1.5}
+    body::before{content:'';position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.02) 1px, transparent 1px),linear-gradient(90deg, rgba(255,255,255,.02) 1px, transparent 1px);background-size:64px 64px;mask-image:radial-gradient(circle at center, black 35%, transparent 86%);opacity:.26}
+    .wrap{max-width:1320px;margin:0 auto;padding:20px}
+    .top,.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:18px;box-shadow:0 24px 80px rgba(0,0,0,.42);backdrop-filter:blur(16px)}
+    .top{margin-bottom:12px;display:grid;gap:14px}
+    .title-row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+    .title-row strong{font-size:1.08rem;letter-spacing:-.02em}
+    .controls{display:grid;grid-template-columns:1.2fr 1fr 1fr auto auto auto;gap:10px;margin-top:12px}
+    .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    .chip{border:1px solid var(--line);border-radius:999px;padding:7px 12px;color:var(--muted);font-size:.78rem;background:rgba(255,255,255,.03)}
+    input,button{padding:11px 12px;border-radius:14px;border:1px solid var(--line);background:#0d1424;color:var(--ink);font-size:.95rem}
+    input{outline:none}
+    button{border:none;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#06121d;cursor:pointer;font-weight:800}
+    .secondary{background:rgba(255,255,255,.04);border:1px solid var(--line);color:var(--ink)}
+    .danger{background:linear-gradient(135deg,#ff5a79,#ff8a5c);color:#11070c}
+    .grid{margin-top:12px;display:grid;grid-template-columns:1.12fr .88fr;gap:12px}
+    .card h2{margin:0 0 10px;font-size:.98rem;letter-spacing:-.01em;font-family:"Segoe UI",system-ui,sans-serif}
+    .kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+    .kpi{border:1px solid var(--line);border-radius:16px;padding:12px;background:rgba(255,255,255,.03)}
+    .kpi .v{font-weight:900;font-size:1.1rem}.kpi .l{color:var(--muted);font-size:.74rem;margin-top:2px;text-transform:uppercase;letter-spacing:.08em}
+    .signal{border:1px solid var(--line);border-left:4px solid var(--line);border-radius:16px;padding:12px;margin:10px 0;background:rgba(255,255,255,.03)}
+    .long{border-left-color:var(--up)}.short{border-left-color:var(--down)}
+    .sig-meta{color:var(--muted);font-size:.8rem;line-height:1.55}
+    .mono{font-family:ui-monospace,Consolas,monospace;white-space:pre-wrap;font-size:.8rem;max-height:300px;overflow:auto}
+    .exec{display:grid;grid-template-columns:1fr 1fr auto auto;gap:10px;margin-top:10px}
+    .muted{color:var(--muted)}
+    .ok{color:var(--up)}
+    .warn{color:#f5c05c}
+    .bad{color:var(--down)}
+    .access-line{display:grid;grid-template-columns:1fr 1fr auto auto;gap:10px}
+    .install-note{margin-top:8px;font-size:.82rem;color:var(--muted)}
+    a.link{color:#9fd7ff;text-decoration:none}
+    @media(max-width:1080px){.controls{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.exec,.access-line{grid-template-columns:1fr 1fr}}
+    @media(max-width:560px){.controls,.exec,.access-line{grid-template-columns:1fr}.chips{flex-direction:column}.kpis{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <section class="top">
+    <div class="title-row">
+      <strong>AFR Trading Agent - Live Console</strong>
+      <span id="ts" class="muted">--</span>
+    </div>
+    <div class="chips">
+      <span class="chip" id="chip-health">API: --</span>
+      <span class="chip" id="chip-signals">Signals: --</span>
+      <span class="chip" id="chip-hit">Hit rate: --</span>
+      <span class="chip" id="chip-updated">Update: --</span>
+      <span class="chip" id="chip-runtime">Runtime: --</span>
+      <span class="chip" id="chip-auth">Access: --</span>
+    </div>
+    <div class="controls">
+      <input id="token" placeholder="Token session ou token maitre" />
+      <input id="symbols" value="EURUSDm,XAUUSDm,BTCUSDm" />
+      <input id="tfs" value="M5,M15" />
+      <button id="refresh">Rafraichir</button>
+      <button id="learn" class="secondary">Evaluer apprentissage</button>
+      <button id="installApp" class="secondary" style="display:none">Installer l'app</button>
+    </div>
+    <div id="installHint" class="install-note"></div>
+  </section>
+
+  <section class="card" style="margin-bottom:12px">
+    <div class="panel-head">
+      <h2>Demonstration rapide</h2>
+      <span class="muted">Lecture en 4 etapes</span>
+    </div>
+    <div class="chips">
+      <span class="chip">1. Ouvrir la page</span>
+      <span class="chip">2. Lire les KPIs</span>
+      <span class="chip">3. Demander l'acces mobile</span>
+      <span class="chip">4. Ouvrir le desktop</span>
+    </div>
+  </section>
+
+  <section class="grid">
+    <article class="card">
+      <h2>Signaux live MT5</h2>
+      <div id="kpis" class="kpis"></div>
+      <div id="signals"></div>
+    </article>
+
+    <article class="card">
+      <h2>Acces mobile valide</h2>
+      <div class="access-line">
+        <input id="accountName" placeholder="Nom utilisateur" />
+        <input id="deviceName" placeholder="Nom appareil" />
+        <button id="askAccess">Demander</button>
+        <button id="clearAccess" class="danger">Reset</button>
+      </div>
+      <div class="access-line" style="margin-top:8px;grid-template-columns:1fr auto">
+        <input id="requestId" placeholder="Request ID" readonly />
+        <a class="link" href="/admin" target="_blank" rel="noopener">Dashboard desktop admin</a>
+      </div>
+      <div id="accessStatus" class="mono" style="margin-top:8px;max-height:180px"></div>
+    </article>
+
+    <article class="card">
+      <h2>Validation sur Desktop</h2>
+      <div class="exec">
+        <input id="sigid" placeholder="ID signal" />
+        <input id="risk" placeholder="Risque %" value="1" />
+        <button id="preview">Preview</button>
+        <button id="execute" class="secondary">Ouvrir sur Desktop</button>
+      </div>
+      <div class="exec">
+        <input id="confirm" placeholder="Tape EXECUTE pour valider" />
+      </div>
+      <div id="execout" class="mono"></div>
+    </article>
+
+    <article class="card">
+      <h2>Brief marche</h2>
+      <div id="brief" class="mono"></div>
+    </article>
+
+    <article class="card">
+      <h2>Apprentissage</h2>
+      <div id="learning" class="mono"></div>
+    </article>
+
+    <article class="card" style="grid-column:1/-1">
+      <h2>Runtime training</h2>
+      <div id="metrics" class="mono"></div>
+      <div id="logs" class="mono"></div>
+    </article>
+  </section>
+</div>
+
+<script>
+const el = id => document.getElementById(id);
+const fmt = v => (v===undefined||v===null)?'--':String(v);
+
+const LS_TOKEN = 'afr_token';
+const LS_ACCOUNT = 'afr_account_name';
+const LS_DEVICE = 'afr_device_name';
+const LS_DEVICE_ID = 'afr_device_id';
+const LS_REQUEST = 'afr_request_id';
+
+let pollTimer = null;
+let deferredInstallPrompt = null;
+
+function isIos(){
+  const ua = window.navigator.userAgent || '';
+  return /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+
+function isInStandalone(){
+  return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+}
+
+function updateInstallState(message=''){
+  const btn = el('installApp');
+  const hint = el('installHint');
+  if(!btn || !hint) return;
+
+  if(isInStandalone()){
+    btn.style.display = 'none';
+    hint.textContent = 'App deja installee sur cet appareil.';
+    return;
+  }
+
+  if(deferredInstallPrompt){
+    btn.style.display = 'inline-block';
+    hint.textContent = message || 'Installation disponible: clique "Installer l\'app".';
+    return;
+  }
+
+  btn.style.display = 'none';
+  if(window.location.protocol !== 'https:' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1'){
+    hint.textContent = 'Installation PWA limitee en HTTP. Utilise HTTPS (ex: serve_public_tunnel.py).';
+    return;
+  }
+
+  if(isIos()){
+    hint.textContent = 'iPhone/iPad: Safari > Partager > Sur l\'ecran d\'accueil.';
+    return;
+  }
+
+  hint.textContent = 'Installation non proposee par ce navigateur pour le moment.';
+}
+
+async function installApp(){
+  if(!deferredInstallPrompt){
+    updateInstallState('Invite d\'installation indisponible pour le moment.');
+    return;
+  }
+
+  try{
+    deferredInstallPrompt.prompt();
+    const choice = await deferredInstallPrompt.userChoice;
+    if(choice?.outcome === 'accepted'){
+      updateInstallState('Installation acceptee.');
+    }else{
+      updateInstallState('Installation annulee.');
+    }
+  }catch{
+    updateInstallState('Impossible de lancer l\'installation.');
+  }finally{
+    deferredInstallPrompt = null;
+    el('installApp').style.display = 'none';
+  }
+}
+
+function randomId(){
+  return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+  );
+}
+
+function getDeviceId(){
+  let v = localStorage.getItem(LS_DEVICE_ID);
+  if(!v){
+    v = randomId();
+    localStorage.setItem(LS_DEVICE_ID, v);
+  }
+  return v;
+}
+
+function authToken(){ return (el('token')?.value || '').trim(); }
+function tokenPart(){ const t=authToken(); return t?`token=${encodeURIComponent(t)}`:''; }
+function addToken(url){ const tp=tokenPart(); if(!tp) return url; return url.includes('?')?`${url}&${tp}`:`${url}?${tp}`; }
+
+function withAuthHeaders(headers={}, method='GET'){
+  const out = {...headers};
+  const token = authToken();
+  if(token){
+    out['Authorization'] = `Bearer ${token}`;
+    out['X-Agent-Token'] = token;
+  }
+  if(String(method).toUpperCase() !== 'GET' && !out['Content-Type']){
+    out['Content-Type'] = 'application/json';
+  }
+  return out;
+}
+
+async function getJson(url, opts={}){
+  const method = (opts.method || 'GET').toUpperCase();
+  const headers = withAuthHeaders(opts.headers || {}, method);
+  const r = await fetch(addToken(url), {...opts, method, headers});
+  if(!r.ok) throw new Error(await r.text());
+  return r.json();
+}
+
+function setAccessStatus(text, css='muted'){
+  const box = el('accessStatus');
+  box.className = `mono ${css}`;
+  box.textContent = text;
+}
+
+function persistInputs(){
+  localStorage.setItem(LS_TOKEN, authToken());
+  localStorage.setItem(LS_ACCOUNT, (el('accountName').value || '').trim());
+  localStorage.setItem(LS_DEVICE, (el('deviceName').value || '').trim());
+  localStorage.setItem(LS_REQUEST, (el('requestId').value || '').trim());
+}
+
+function restoreInputs(){
+  el('token').value = localStorage.getItem(LS_TOKEN) || '';
+  el('accountName').value = localStorage.getItem(LS_ACCOUNT) || '';
+  el('deviceName').value = localStorage.getItem(LS_DEVICE) || (navigator.userAgent.includes('Mobile') ? 'Telephone mobile' : 'Desktop browser');
+  el('requestId').value = localStorage.getItem(LS_REQUEST) || '';
+  getDeviceId();
+}
+
+function renderSignals(payload){
+  const box=el('signals'); const items=payload?.signals||[];
+  if(!items.length){ box.innerHTML='<div class="muted">Aucun signal.</div>'; return; }
+  box.innerHTML=items.map((s,idx)=>{
+    if(s.status!=='TRADE') return `<div class="signal"><b>#${idx+1} ${s.symbol} ${s.timeframe}</b><div class="sig-meta">NO_TRADE ${s.reason||''}</div></div>`;
+    const cls=s.direction==='LONG'?'long':'short';
+    return `<div class="signal ${cls}"><b>#${idx+1} ${s.symbol} ${s.timeframe} ${s.direction} (${s.confidence})</b><div class="sig-meta">Entry ${s.entry} | SL ${s.stop_loss} | TP1 ${s.tp1} | TP2 ${s.tp2} | RR ${s.rr} | Score ${s.confluence_score}</div></div>`;
+  }).join('');
+}
+
+function renderKPIs(summary, signals){
+  const total=(signals?.signals||[]).filter(s=>s.status==='TRADE').length;
+  el('kpis').innerHTML=`
+    <div class='kpi'><div class='v'>${fmt(total)}</div><div class='l'>Signaux actifs</div></div>
+    <div class='kpi'><div class='v'>${fmt(summary.pending)}</div><div class='l'>Pending</div></div>
+    <div class='kpi'><div class='v'>${fmt(summary.hit_rate_pct)}%</div><div class='l'>Hit rate</div></div>
+    <div class='kpi'><div class='v'>${fmt(summary.win)}</div><div class='l'>Wins</div></div>
+    <div class='kpi'><div class='v'>${fmt(summary.loss)}</div><div class='l'>Losses</div></div>
+    <div class='kpi'><div class='v'>${fmt(summary.total)}</div><div class='l'>Journal total</div></div>`;
+}
+
+async function refreshAll(){
+  persistInputs();
+  try{
+    const symbols=encodeURIComponent(el('symbols').value.trim());
+    const tfs=encodeURIComponent(el('tfs').value.trim());
+    const health=await getJson('/health');
+
+    el('chip-health').textContent=`API: ${health.status} | LLM: ${health.llm?.provider || '--'}`;
+    el('chip-auth').textContent=`Access: pending ${health.access?.pending_requests ?? '--'} | active ${health.access?.active_sessions ?? '--'}`;
+
+    const sig=await getJson(`/live/signals?symbols=${symbols}&timeframes=${tfs}`);
+    const state=await getJson('/live/state');
+    const metrics=await getJson('/live/training/metrics').catch(()=>({}));
+    const logs=await getJson('/live/training/log?lines=40').catch(()=>({lines:[]}));
+
+    const sigStatus = sig.status || 'ok';
+    const cacheTag = sig.from_cache ? ' cache' : '';
+
+    el('chip-signals').textContent=`Signals: ${(sig.signals||[]).filter(s=>s.status==='TRADE').length}`;
+    el('chip-hit').textContent=`Hit rate: ${fmt(state.journal_summary?.hit_rate_pct)}%`;
+    el('chip-updated').textContent=`Update: ${new Date().toLocaleTimeString()}`;
+    el('chip-runtime').textContent=`Runtime: ${sigStatus}${cacheTag}`;
+    el('ts').textContent=new Date().toLocaleString();
+
+    renderSignals(sig);
+    renderKPIs(state.journal_summary||{}, sig);
+    el('brief').textContent=state.brief||'';
+    el('learning').textContent=JSON.stringify(state.learning||{}, null, 2);
+    el('metrics').textContent=JSON.stringify(metrics||{}, null, 2);
+    el('logs').textContent=(logs.lines||[]).join('\n');
+  }catch(e){
+    el('signals').innerHTML=`<div class='muted'>Erreur: ${String(e.message||e)}</div>`;
+  }
+}
+
+async function requestAccess(){
+  const accountName = (el('accountName').value || '').trim();
+  const deviceName = (el('deviceName').value || '').trim() || 'Telephone';
+  if(!accountName){
+    setAccessStatus('Saisis un nom utilisateur avant la demande.', 'warn');
+    return;
+  }
+
+  persistInputs();
+  setAccessStatus('Envoi de la demande en cours...', 'muted');
+
+  try{
+    const payload = {
+      account_name: accountName,
+      device_name: deviceName,
+      device_id: getDeviceId(),
+    };
+    const data = await getJson('/access/request', { method: 'POST', body: JSON.stringify(payload) });
+    if(data.request_id){
+      el('requestId').value = data.request_id;
+      localStorage.setItem(LS_REQUEST, data.request_id);
+    }
+    if(data.token){
+      el('token').value = data.token;
+      localStorage.setItem(LS_TOKEN, data.token);
+    }
+
+    if(String(data.status).toUpperCase() === 'APPROVED' && data.token){
+      setAccessStatus(`Valide. Token actif jusqu a ${data.expires_at || '--'}.`, 'ok');
+      stopPolling();
+      await refreshAll();
+      return;
+    }
+
+    setAccessStatus('Demande envoyee. En attente de validation sur dashboard desktop.', 'warn');
+    startPolling();
+  }catch(e){
+    setAccessStatus(`Erreur demande: ${e.message || e}`, 'bad');
+  }
+}
+
+function stopPolling(){
+  if(pollTimer){
+    clearInterval(pollTimer);
+    pollTimer = null;
+  }
+}
+
+async function pollAccessStatus(){
+  const requestId = (el('requestId').value || '').trim();
+  if(!requestId) return;
+  try{
+    const data = await getJson(`/access/request/status?request_id=${encodeURIComponent(requestId)}`);
+    const status = String(data.status || '').toUpperCase();
+
+    if(status === 'APPROVED' && data.token){
+      el('token').value = data.token;
+      localStorage.setItem(LS_TOKEN, data.token);
+      setAccessStatus(`Compte valide par desktop. Expire le ${data.expires_at || '--'}.`, 'ok');
+      stopPolling();
+      await refreshAll();
+      return;
+    }
+
+    if(status === 'REJECTED'){
+      setAccessStatus(`Demande refusee: ${data.note || 'sans motif'}`, 'bad');
+      stopPolling();
+      return;
+    }
+
+    if(status === 'EXPIRED'){
+      setAccessStatus('Demande expiree. Relance la demande.', 'warn');
+      stopPolling();
+      return;
+    }
+
+    setAccessStatus(`Demande en attente (${requestId.slice(0,8)}...).`, 'warn');
+  }catch(e){
+    setAccessStatus(`Erreur suivi demande: ${e.message || e}`, 'bad');
+  }
+}
+
+function startPolling(){
+  stopPolling();
+  pollAccessStatus();
+  pollTimer = setInterval(pollAccessStatus, 5000);
+}
+
+function resetAccess(){
+  stopPolling();
+  el('requestId').value = '';
+  el('token').value = '';
+  localStorage.removeItem(LS_REQUEST);
+  localStorage.removeItem(LS_TOKEN);
+  setAccessStatus('Session locale effacee.', 'muted');
+}
+
+async function runLearning(){
+  try{ await getJson('/live/learning/evaluate', {method:'POST'}); await refreshAll(); }
+  catch(e){ alert('Erreur apprentissage: '+(e.message||e)); }
+}
+
+async function previewExec(){
+  try{
+    const id=encodeURIComponent((el('sigid').value||'').trim());
+    const risk=encodeURIComponent((el('risk').value||'1').trim());
+    const data=await getJson(`/live/execution/preview?signal_id=${id}&risk_pct=${risk}`, {method:'POST'});
+    el('execout').textContent=JSON.stringify(data, null, 2);
+  }catch(e){ el('execout').textContent='Erreur preview: '+(e.message||e); }
+}
+
+function openDesktop(){
+  window.open('/desktop', '_blank');
+  el('execout').textContent='Ouvrez le desktop pour valider l'ordre.';
+}
+
+el('refresh').addEventListener('click', refreshAll);
+el('learn').addEventListener('click', runLearning);
+el('preview').addEventListener('click', previewExec);
+el('execute').addEventListener('click', openDesktop);
+el('askAccess').addEventListener('click', requestAccess);
+el('clearAccess').addEventListener('click', resetAccess);
+el('installApp').addEventListener('click', installApp);
+el('token').addEventListener('input', persistInputs);
+el('accountName').addEventListener('input', persistInputs);
+el('deviceName').addEventListener('input', persistInputs);
+
+window.addEventListener('beforeinstallprompt', (event) => {
+  event.preventDefault();
+  deferredInstallPrompt = event;
+  updateInstallState();
+});
+
+window.addEventListener('appinstalled', () => {
+  deferredInstallPrompt = null;
+  updateInstallState('App installee avec succes.');
+});
+
+restoreInputs();
+updateInstallState();
+if((el('requestId').value || '').trim()){
+  startPolling();
+}
+refreshAll();
+setInterval(refreshAll, 60000);
+if('serviceWorker' in navigator){ window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{})); }
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+

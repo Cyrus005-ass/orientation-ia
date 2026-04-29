@@ -1,0 +1,315 @@
+﻿<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>AFR Admin Validation</title>
+  <style>
+    :root{--bg:#05070b;--panel:rgba(14,20,32,.9);--line:rgba(148,163,184,.15);--ink:#eef3ff;--muted:#95a3c3;--ok:#2ee59d;--warn:#f5c05c;--bad:#ff5a79;--brand:#45d7ff;--brand2:#9eeeff}
+    *{box-sizing:border-box}
+    html,body{min-height:100%}
+    body{margin:0;color:var(--ink);font-family:"Segoe UI",system-ui,sans-serif;background:
+      radial-gradient(circle at 20% -8%, rgba(69,215,255,.14), transparent 30%),
+      radial-gradient(circle at 80% 0%, rgba(138,168,255,.12), transparent 28%),
+      linear-gradient(180deg,#04060a,#0b1020);line-height:1.5}
+    body::before{content:'';position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.02) 1px, transparent 1px),linear-gradient(90deg, rgba(255,255,255,.02) 1px, transparent 1px);background-size:68px 68px;mask-image:radial-gradient(circle at center, black 34%, transparent 88%);opacity:.25}
+    a{color:inherit;text-decoration:none}
+    .wrap{max-width:1280px;margin:0 auto;padding:18px 16px 24px}
+    .hero,.card{background:var(--panel);border:1px solid var(--line);border-radius:22px;box-shadow:0 24px 80px rgba(0,0,0,.42);backdrop-filter:blur(16px)}
+    .hero{padding:20px;margin-bottom:12px;display:grid;grid-template-columns:1fr auto;gap:16px}
+    .eyebrow{color:var(--brand);text-transform:uppercase;letter-spacing:.2em;font-size:11px;margin-bottom:10px;font-weight:700}
+    h1,h2,h3{margin:0;font-family:"Segoe UI",system-ui,sans-serif}
+    h1{font-size:clamp(1.8rem,3vw,2.8rem);line-height:1;letter-spacing:-.03em}
+    .hero p{margin:12px 0 0;color:var(--muted);line-height:1.65;max-width:64ch}
+    .hero-actions,.chips,.actions{display:flex;flex-wrap:wrap;gap:8px}
+    .chips{justify-content:flex-end;align-content:flex-start}
+    .chip{border:1px solid var(--line);border-radius:999px;padding:7px 10px;background:rgba(255,255,255,.03);color:var(--muted);font-size:.78rem}
+    .btn{display:inline-flex;align-items:center;justify-content:center;padding:12px 16px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--ink);font-weight:800;cursor:pointer}
+    .btn.primary{background:linear-gradient(135deg,var(--brand),var(--brand2));color:#06121d;border:0}
+    .btn.danger{background:linear-gradient(135deg,#ff5a79,#ff8a5c);color:#11070c;border:0}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .card{padding:16px}
+    .head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:12px}
+    .stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0}
+    .stat{border:1px solid var(--line);border-radius:16px;padding:12px;background:rgba(255,255,255,.03)}
+    .stat span{display:block;color:var(--muted);font-size:.74rem;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em}
+    .stat strong{font-size:1.12rem}
+    .toolbar{display:grid;grid-template-columns:1.2fr 1fr auto auto;gap:10px}
+    input,button{padding:11px 12px;border-radius:14px;border:1px solid var(--line);background:#0d1424;color:var(--ink);font:inherit}
+    button{cursor:pointer;font-weight:800;border:none;background:linear-gradient(135deg,var(--brand),var(--brand2));color:#06121d}
+    button.secondary{background:rgba(255,255,255,.05);border:1px solid var(--line);color:var(--ink)}
+    .mono{font-family:ui-monospace,Consolas,monospace;white-space:pre-wrap;font-size:.8rem}
+    .muted{color:var(--muted)}
+    .badge{display:inline-block;padding:4px 10px;border-radius:999px;border:1px solid var(--line);font-size:.72rem;background:rgba(255,255,255,.03)}
+    .ok{color:var(--ok)} .warn{color:var(--warn)} .bad{color:var(--bad)}
+    table{width:100%;border-collapse:collapse;font-size:.85rem}
+    th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+    tbody tr:hover{background:rgba(255,255,255,.02)}
+    .panel-title{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:10px}
+    .scroll{overflow:auto}
+    @media(max-width:1080px){.hero,.grid{grid-template-columns:1fr}.chips{justify-content:flex-start}}
+    @media(max-width:720px){
+      .wrap{padding:12px}
+      .hero,.card{padding:14px;border-radius:18px}
+      .toolbar,.stats{grid-template-columns:1fr 1fr}
+      .grid{grid-template-columns:1fr}
+      .actions{flex-direction:column}
+      .btn{width:100%}
+    }
+    @media(max-width:540px){.toolbar,.stats{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div>
+      <div class="eyebrow">Desktop Admin</div>
+      <h1>Validation des comptes et sessions.</h1>
+      <p>Ce tableau de bord centralise les demandes d'acces mobile, les approbations et les sessions actives. L'interface reste lisible sur desktop et tablette.</p>
+      <div class="hero-actions">
+        <a class="btn primary" href="/desktop">Desktop trader</a>
+        <a class="btn" href="/">Vue mobile</a>
+        <a class="btn" href="/dashboard">Dashboard</a>
+      </div>
+    </div>
+    <div class="chips">
+      <span class="chip">Approval gate</span>
+      <span class="chip">Audit trail</span>
+      <span class="chip">Sessions live</span>
+    </div>
+  </header>
+
+  <section class="card" style="margin-bottom:12px">
+    <div class="panel-title">
+      <h2>Demonstration rapide</h2>
+      <span class="muted">Apprendre la validation en 4 etapes</span>
+    </div>
+    <div class="chips">
+      <span class="chip">1. Coller le token admin</span>
+      <span class="chip">2. Rafraichir les demandes</span>
+      <span class="chip">3. Valider ou refuser</span>
+      <span class="chip">4. Revoquer si besoin</span>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="panel-title">
+      <h2>Controle</h2>
+      <span class="muted">Acces administrateur</span>
+    </div>
+    <div class="toolbar">
+      <input id="adminToken" placeholder="Token admin (ADMIN_DASH_TOKEN ou MOBILE_DASH_TOKEN)" />
+      <input id="sessionHours" value="24" placeholder="Duree session (heures)" />
+      <button id="refreshBtn">Rafraichir</button>
+      <button id="clearBtn" class="secondary">Effacer token</button>
+    </div>
+    <div style="margin-top:12px" class="stats">
+      <div class="stat"><span>Demandes</span><strong id="statPending">--</strong></div>
+      <div class="stat"><span>Sessions</span><strong id="statActive">--</strong></div>
+      <div class="stat"><span>Total</span><strong id="statTotal">--</strong></div>
+    </div>
+    <div class="mono muted" id="status">Charge les demandes en attente.</div>
+  </section>
+
+  <section class="grid" style="margin-top:12px">
+    <article class="card">
+      <div class="panel-title">
+        <h3>Demandes de connexion</h3>
+        <span class="muted">Validation manuelle</span>
+      </div>
+      <div class="mono" id="summary"></div>
+      <div class="scroll" style="margin-top:8px">
+        <table>
+          <thead>
+            <tr>
+              <th>Compte</th>
+              <th>Appareil</th>
+              <th>Statut</th>
+              <th>MAJ</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="requestsBody"></tbody>
+        </table>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="panel-title">
+        <h3>Sessions actives</h3>
+        <span class="muted">Contrôle live</span>
+      </div>
+      <div class="scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Compte</th>
+              <th>Token</th>
+              <th>Expire</th>
+              <th>Etat</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="sessionsBody"></tbody>
+        </table>
+      </div>
+    </article>
+  </section>
+</div>
+
+<script>
+const el = id => document.getElementById(id);
+const LS_ADMIN = 'afr_admin_token';
+
+function adminToken(){ return (el('adminToken').value || '').trim(); }
+
+function headers(method='GET'){
+  const h = {};
+  const token = adminToken();
+  if(token){
+    h['Authorization'] = `Bearer ${token}`;
+    h['X-Admin-Token'] = token;
+  }
+  if(method !== 'GET') h['Content-Type'] = 'application/json';
+  return h;
+}
+
+async function api(url, opts={}){
+  const method = (opts.method || 'GET').toUpperCase();
+  const r = await fetch(url, {...opts, method, headers: {...headers(method), ...(opts.headers||{})}});
+  if(!r.ok) throw new Error(await r.text());
+  return r.json();
+}
+
+function fmtDate(v){
+  if(!v) return '--';
+  try { return new Date(v).toLocaleString(); } catch { return v; }
+}
+
+function persist(){ localStorage.setItem(LS_ADMIN, adminToken()); }
+
+function status(txt, css='muted'){
+  el('status').className = `mono ${css}`;
+  el('status').textContent = txt;
+}
+
+async function approve(requestId){
+  const hours = Number((el('sessionHours').value || '24').trim()) || 24;
+  try{
+    const data = await api(`/admin/access/requests/${encodeURIComponent(requestId)}/approve`, {
+      method: 'POST',
+      body: JSON.stringify({ duration_hours: hours, approved_by: 'DESKTOP_ADMIN' }),
+    });
+    status(`Valide: ${data.account_name || '--'} (${data.device_name || '--'}) | token: ${data.token || '--'}`, 'ok');
+    await refresh();
+  }catch(e){
+    status(`Erreur validation: ${e.message || e}`, 'bad');
+  }
+}
+
+async function reject(requestId){
+  try{
+    await api(`/admin/access/requests/${encodeURIComponent(requestId)}/reject`, {
+      method: 'POST',
+      body: JSON.stringify({ note: 'Refuse depuis desktop admin' }),
+    });
+    status(`Demande refusee: ${requestId}`, 'warn');
+    await refresh();
+  }catch(e){
+    status(`Erreur rejet: ${e.message || e}`, 'bad');
+  }
+}
+
+async function revokeSession(requestId, tokenPreview){
+  try{
+    await api('/admin/access/sessions/revoke', {
+      method: 'POST',
+      body: JSON.stringify({ request_id: requestId, token_preview: tokenPreview }),
+    });
+    status(`Session revoquee (${tokenPreview || requestId})`, 'warn');
+    await refresh();
+  }catch(e){
+    status(`Erreur revoke: ${e.message || e}`, 'bad');
+  }
+}
+
+function renderRequests(rows){
+  const body = el('requestsBody');
+  if(!rows.length){
+    body.innerHTML = `<tr><td colspan="5" class="muted">Aucune demande.</td></tr>`;
+    return;
+  }
+
+  body.innerHTML = rows.map(r => {
+    const status = String(r.status || '').toUpperCase();
+    const cls = status === 'APPROVED' ? 'ok' : (status === 'PENDING' ? 'warn' : 'bad');
+    const actions = status === 'PENDING'
+      ? `<div class="actions"><button data-a="approve" data-id="${r.id}">Valider</button><button class="danger" data-a="reject" data-id="${r.id}">Refuser</button></div>`
+      : `<span class="muted">-</span>`;
+
+    return `<tr>
+      <td><b>${r.account_name || '--'}</b><div class="mono muted">${r.id || '--'}</div></td>
+      <td>${r.device_name || '--'}<div class="mono muted">${r.device_id || '--'}</div></td>
+      <td><span class="badge ${cls}">${status || '--'}</span></td>
+      <td>${fmtDate(r.updated_at)}</td>
+      <td>${actions}</td>
+    </tr>`;
+  }).join('');
+
+  body.querySelectorAll('button[data-a="approve"]').forEach(btn => btn.addEventListener('click', () => approve(btn.dataset.id)));
+  body.querySelectorAll('button[data-a="reject"]').forEach(btn => btn.addEventListener('click', () => reject(btn.dataset.id)));
+}
+
+function renderSessions(rows){
+  const body = el('sessionsBody');
+  if(!rows.length){
+    body.innerHTML = `<tr><td colspan="5" class="muted">Aucune session.</td></tr>`;
+    return;
+  }
+
+  body.innerHTML = rows.map(s => {
+    return `<tr>
+      <td>${s.account_name || '--'}<div class="mono muted">${s.device_name || '--'}</div></td>
+      <td class="mono">${s.token_preview || '--'}</td>
+      <td>${fmtDate(s.expires_at)}</td>
+      <td>${s.active ? '<span class="badge ok">ACTIVE</span>' : '<span class="badge bad">INACTIVE</span>'}</td>
+      <td>${s.active ? `<button class="danger" data-a="revoke" data-id="${s.request_id || ''}" data-token="${s.token_preview || ''}">Revoquer</button>` : '<span class="muted">-</span>'}</td>
+    </tr>`;
+  }).join('');
+
+  body.querySelectorAll('button[data-a="revoke"]').forEach(btn => btn.addEventListener('click', () => revokeSession(btn.dataset.id, btn.dataset.token)));
+}
+
+async function refresh(){
+  persist();
+  try{
+    const data = await api('/admin/access/requests');
+    const s = data.summary || {};
+    el('summary').textContent = `Pending: ${s.pending_requests ?? 0} | Active sessions: ${s.active_sessions ?? 0} | Total requests: ${s.total_requests ?? 0}`;
+    el('statPending').textContent = s.pending_requests ?? 0;
+    el('statActive').textContent = s.active_sessions ?? 0;
+    el('statTotal').textContent = s.total_requests ?? 0;
+    renderRequests(data.requests || []);
+    renderSessions(data.sessions || []);
+    status('Dashboard admin synchronise.', 'muted');
+  }catch(e){
+    status(`Erreur chargement admin: ${e.message || e}`, 'bad');
+  }
+}
+
+el('refreshBtn').addEventListener('click', refresh);
+el('clearBtn').addEventListener('click', () => {
+  el('adminToken').value = '';
+  localStorage.removeItem(LS_ADMIN);
+  status('Token admin efface localement.', 'muted');
+});
+el('adminToken').addEventListener('input', persist);
+
+el('adminToken').value = localStorage.getItem(LS_ADMIN) || '';
+refresh();
+setInterval(refresh, 15000);
+</script>
+</body>
+</html>
+
+

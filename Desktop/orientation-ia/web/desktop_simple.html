@@ -1,0 +1,294 @@
+﻿<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>AFR Desktop Trader</title>
+  <style>
+    :root {
+      --bg:#05070b; --card:rgba(14,20,32,.9); --line:rgba(148,163,184,.15); --ink:#eef3ff; --muted:#95a3c3; --ok:#2ee59d; --bad:#ff5a79; --brand:#45d7ff; --brand2:#9eeeff;
+    }
+    *{box-sizing:border-box}
+    html,body{min-height:100%}
+    body{margin:0;background:
+      radial-gradient(circle at 15% -8%, rgba(69,215,255,.14), transparent 28%),
+      radial-gradient(circle at 85% 0%, rgba(138,168,255,.12), transparent 28%),
+      linear-gradient(180deg,#04060a,#0b1020);color:var(--ink);font-family:"Segoe UI",system-ui,sans-serif;line-height:1.5}
+    body::before{content:'';position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.02) 1px, transparent 1px),linear-gradient(90deg, rgba(255,255,255,.02) 1px, transparent 1px);background-size:72px 72px;mask-image:radial-gradient(circle at center, black 34%, transparent 88%);opacity:.24}
+    .wrap{max-width:1360px;margin:0 auto;padding:18px 16px 24px}
+    .hero,.card{background:var(--card);border:1px solid var(--line);border-radius:22px;box-shadow:0 24px 80px rgba(0,0,0,.42);backdrop-filter:blur(16px)}
+    .hero{padding:20px;margin-bottom:12px;display:grid;grid-template-columns:1.15fr .85fr;gap:16px}
+    .eyebrow{color:var(--brand);text-transform:uppercase;letter-spacing:.2em;font-size:11px;margin-bottom:10px;font-weight:700}
+    h1,h2{margin:0;font-family:"Segoe UI",system-ui,sans-serif}
+    h1{font-size:clamp(1.8rem,3vw,2.8rem);line-height:1;letter-spacing:-.03em}
+    .hero p{margin:12px 0 0;color:var(--muted);line-height:1.65;max-width:62ch}
+    .hero-actions,.chips,.actions{display:flex;flex-wrap:wrap;gap:8px}
+    .chips{justify-content:flex-end;align-content:flex-start}
+    .chip{border:1px solid var(--line);border-radius:999px;padding:7px 10px;background:rgba(255,255,255,.03);color:var(--muted);font-size:.78rem}
+    .hero-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+    .btn{display:inline-flex;align-items:center;justify-content:center;padding:12px 16px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--ink);font-weight:800;cursor:pointer;text-decoration:none}
+    .btn.primary{background:linear-gradient(135deg,var(--brand),var(--brand2));color:#06121d;border:0}
+    .btn.danger{background:linear-gradient(135deg,#ff5a79,#ff8a5c);color:#11070c;border:0}
+    .grid{display:grid;grid-template-columns:360px 1fr;gap:12px}
+    .card{padding:16px}
+    h2{margin:0 0 10px;font-size:1rem;letter-spacing:-.01em}
+    .panel-head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:12px}
+    .muted{color:var(--muted)}
+    .section{padding:14px;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.03)}
+    .section + .section{margin-top:12px}
+    .section-title{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:10px}
+    .section-title strong{font-size:.88rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+    .row{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+    input,select,button{background:#0d1424;color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:11px 12px;width:100%;font:inherit}
+    input,select{min-width:0}
+    button{width:auto;cursor:pointer;background:linear-gradient(135deg,var(--brand),var(--brand2));border:none;font-weight:800;color:#06121d}
+    button.alt{background:rgba(255,255,255,.05);border:1px solid var(--line);color:var(--ink)}
+    .button-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+    .field-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .mono{font-family:ui-monospace,Consolas,monospace;white-space:pre-wrap}
+    .log{margin-top:10px;padding:12px;border-radius:16px;border:1px solid var(--line);background:rgba(6,9,15,.74);min-height:160px;max-height:260px;overflow:auto;font-size:.8rem;color:#c8d2ef}
+    table{width:100%;border-collapse:collapse;font-size:.9rem}
+    th,td{border-bottom:1px solid var(--line);padding:9px;text-align:left;vertical-align:top}
+    tbody tr:hover{background:rgba(255,255,255,.02)}
+    .ok{color:var(--ok)} .bad{color:var(--bad)}
+    .toolbar{display:flex;gap:8px;flex-wrap:wrap}
+    .toolbar .btn{padding:10px 14px}
+    @media (max-width:1080px){ .grid{grid-template-columns:1fr} .hero{grid-template-columns:1fr} .chips{justify-content:flex-start} }
+    @media (max-width:680px){
+      .wrap{padding:12px}
+      .hero,.card{padding:14px;border-radius:18px}
+      .field-grid,.button-row{grid-template-columns:1fr}
+      .row{flex-direction:column}
+      .btn{width:100%}
+      .button-row .btn{width:100%}
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div>
+      <div class="eyebrow">Orientation IA Desktop</div>
+      <h1>Desktop Trader pour un pilotage net et rapide.</h1>
+      <p>Controle MT5 autonome, lecture des signaux et execution gardee sous validation explicite. L'interface est pensee pour un ecran bureau, mais reste confortable sur tablette.</p>
+      <div class="hero-actions">
+        <a class="btn primary" href="/">Vue mobile</a>
+        <a class="btn" href="/admin">Admin</a>
+        <a class="btn" href="/dashboard">Dashboard</a>
+      </div>
+    </div>
+    <div class="chips">
+      <span class="chip" id="chip-strategy">Strategie: RSI&lt;30</span>
+      <span class="chip" id="chip-rsi">RSI: --</span>
+      <span class="chip" id="chip-price">Prix: --</span>
+      <span class="chip" id="chip-runtime">Runtime: --</span>
+    </div>
+  </header>
+
+  <section class="card" style="margin-bottom:12px">
+    <div class="panel-head">
+      <h2>Demonstration rapide</h2>
+      <span class="muted">Apprendre l'app en 5 etapes</span>
+    </div>
+    <div class="chips">
+      <span class="chip">1. Saisir le token</span>
+      <span class="chip">2. Lancer l'etat RSI</span>
+      <span class="chip">3. Lire les signaux</span>
+      <span class="chip">4. Ouvrir un trade</span>
+      <span class="chip">5. Envoyer vers MT5</span>
+    </div>
+  </section>
+
+  <div class="grid">
+    <section class="card">
+      <div class="panel-head">
+        <h2>Controle</h2>
+        <span class="muted">Actions directes</span>
+      </div>
+
+      <div class="section">
+        <div class="section-title"><strong>Acces</strong><span class="muted">Token API</span></div>
+        <div class="row"><input id="token" placeholder="Token API (PW XXXXXXXX)" /></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title"><strong>Marches</strong><span class="muted">Lecture du signal</span></div>
+        <div class="field-grid">
+          <input id="symbol" value="BTCUSDT" placeholder="Symbole" />
+          <select id="interval">
+            <option>15m</option><option>1h</option><option selected>4h</option><option>1d</option>
+          </select>
+        </div>
+        <div class="row" style="margin-top:8px"><input id="mt5_symbol" placeholder="MT5 symbol (optionnel ex BTCUSDm)" /></div>
+        <div class="button-row">
+          <button id="btnStatus">Etat RSI</button>
+          <button id="btnRun" class="alt">Run Strategie</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title"><strong>Execution</strong><span class="muted">Ordres manuels</span></div>
+        <div class="button-row">
+          <button id="btnBuy">Acheter</button>
+          <button id="btnSell" class="alt">Vendre</button>
+        </div>
+        <div class="button-row" style="margin-top:8px">
+          <button id="btnSync" class="alt">Suivre TP/SL</button>
+          <button id="btnReload" class="alt">Recharger trades</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title"><strong>Cloture</strong><span class="muted">Par trade</span></div>
+        <div class="row"><input id="close_id" placeholder="Trade ID a cloturer" /></div>
+        <div class="row"><button id="btnClose" class="btn danger">Cloturer trade</button></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title"><strong>MT5</strong><span class="muted">Passage direct</span></div>
+        <div class="row"><input id="exec_id" placeholder="Trade ID vers MT5" /></div>
+        <div class="field-grid">
+          <input id="risk" value="1" placeholder="Risque %" />
+          <input id="confirm" placeholder="EXECUTE" />
+        </div>
+        <div class="row" style="margin-top:8px"><button id="btnExec" class="alt">Envoyer vers MT5</button></div>
+      </div>
+
+      <div id="log" class="log muted"></div>
+    </section>
+
+    <section class="card">
+      <div class="panel-head">
+        <h2>Trades</h2>
+        <span class="muted">Etat courant</span>
+      </div>
+      <div style="overflow:auto">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th><th>Symbol</th><th>Side</th><th>Entry</th><th>SL</th><th>TP</th><th>Status</th><th>PnL%</th><th>Source</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+const el = id => document.getElementById(id);
+
+function authToken(){ return (el('token').value || '').trim(); }
+function tok(){ const t=authToken(); return t ? `token=${encodeURIComponent(t)}` : ''; }
+function withTok(url){ const t=tok(); return t ? (url.includes('?')?`${url}&${t}`:`${url}?${t}`) : url; }
+function withAuthHeaders(method='GET'){
+  const headers = {};
+  const token = authToken();
+  if(token){
+    headers['Authorization'] = `Bearer ${token}`;
+    headers['X-Agent-Token'] = token;
+  }
+  if(String(method).toUpperCase() !== 'GET'){
+    headers['Content-Type'] = 'application/json';
+  }
+  return headers;
+}
+async function req(url, method='GET'){
+  const m = String(method).toUpperCase();
+  const r = await fetch(withTok(url), {method:m, headers:withAuthHeaders(m)});
+  const txt = await r.text();
+  let j={raw:txt};
+  try{ j=JSON.parse(txt);}catch{}
+  if(!r.ok) throw new Error(txt);
+  return j;
+}
+function log(x){ el('log').textContent = typeof x==='string'?x:JSON.stringify(x,null,2); }
+
+function row(t){
+  const pnl = (t.pnl_pct===null||t.pnl_pct===undefined)?'--':String(t.pnl_pct);
+  const st = (t.status||'').toUpperCase();
+  const cls = st==='OPEN'?'ok':'bad';
+  return `<tr>
+    <td class="mono">${(t.id||'').slice(0,8)}...</td>
+    <td>${t.symbol||''}</td>
+    <td>${t.side||''}</td>
+    <td>${t.entry_price??''}</td>
+    <td>${t.sl_price??''}</td>
+    <td>${t.tp_price??''}</td>
+    <td class="${cls}">${st}</td>
+    <td>${pnl}</td>
+    <td>${t.source||''}</td>
+  </tr>`;
+}
+
+async function refreshTrades(){
+  const data = await req('/simple/trades?status=ALL');
+  const arr = data.trades||[];
+  el('tbody').innerHTML = arr.map(row).join('') || '<tr><td colspan="9" class="muted">Aucun trade</td></tr>';
+  const openCount = arr.filter(x => (x.status||'').toUpperCase()==='OPEN').length;
+  el('chip-runtime').textContent = `Runtime: ${openCount} OPEN`;
+}
+
+async function status(){
+  const sym = encodeURIComponent((el('symbol').value||'BTCUSDT').trim().toUpperCase());
+  const tf = encodeURIComponent((el('interval').value||'1h').trim());
+  const data = await req(`/simple/status?symbol=${sym}&interval=${tf}`);
+  const s = data.status || {};
+  el('chip-rsi').textContent = `RSI: ${s.rsi ?? '--'}`;
+  el('chip-price').textContent = `Prix: ${s.last_price ?? '--'}`;
+  log(data);
+}
+
+async function runStrategy(){
+  const sym = encodeURIComponent((el('symbol').value||'BTCUSDT').trim().toUpperCase());
+  const tf = encodeURIComponent((el('interval').value||'1h').trim());
+  const data = await req(`/simple/strategy/run?symbol=${sym}&interval=${tf}`,'POST');
+  log(data); await refreshTrades(); await status();
+}
+
+async function open(side){
+  const sym = encodeURIComponent((el('symbol').value||'BTCUSDT').trim().toUpperCase());
+  const mt5 = encodeURIComponent((el('mt5_symbol').value||'').trim());
+  const data = await req(`/simple/trades/open?symbol=${sym}&side=${side}&mt5_symbol=${mt5}`,'POST');
+  log(data); await refreshTrades();
+}
+
+async function closeTrade(){
+  const id = encodeURIComponent((el('close_id').value||'').trim());
+  if(!id){ log('Trade ID requis'); return; }
+  const data = await req(`/simple/trades/close?trade_id=${id}`,'POST');
+  log(data); await refreshTrades();
+}
+
+async function syncTrades(){
+  const data = await req('/simple/trades/sync','POST');
+  log(data); await refreshTrades();
+}
+
+async function execMt5(){
+  const id = encodeURIComponent((el('exec_id').value||'').trim());
+  const risk = encodeURIComponent((el('risk').value||'1').trim());
+  const confirm = encodeURIComponent((el('confirm').value||'').trim());
+  if(!id){ log('Trade ID requis'); return; }
+  const data = await req(`/simple/mt5/execute?trade_id=${id}&risk_pct=${risk}&confirm=${confirm}`,'POST');
+  log(data);
+}
+
+el('btnStatus').addEventListener('click',()=>status().catch(e=>log(String(e.message||e))));
+el('btnRun').addEventListener('click',()=>runStrategy().catch(e=>log(String(e.message||e))));
+el('btnBuy').addEventListener('click',()=>open('BUY').catch(e=>log(String(e.message||e))));
+el('btnSell').addEventListener('click',()=>open('SELL').catch(e=>log(String(e.message||e))));
+el('btnClose').addEventListener('click',()=>closeTrade().catch(e=>log(String(e.message||e))));
+el('btnSync').addEventListener('click',()=>syncTrades().catch(e=>log(String(e.message||e))));
+el('btnReload').addEventListener('click',()=>refreshTrades().catch(e=>log(String(e.message||e))));
+el('btnExec').addEventListener('click',()=>execMt5().catch(e=>log(String(e.message||e))));
+
+refreshTrades().catch(()=>{});
+status().catch(()=>{});
+setInterval(()=>syncTrades().catch(()=>{}), 15000);
+</script>
+</body>
+</html>
+
+

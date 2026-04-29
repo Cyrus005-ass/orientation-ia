@@ -1,0 +1,22 @@
+﻿{
+  "name": "Orientation IA",
+  "short_name": "Orientation",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#06080d",
+  "theme_color": "#06080d",
+  "lang": "fr",
+  "description": "Orientation-IA, signaux, risque et execution MT5",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

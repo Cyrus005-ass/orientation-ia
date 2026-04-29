@@ -1,0 +1,5 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Orientation IA">
+  <rect width="512" height="512" rx="112" fill="#0B0B0F"/>
+  <rect x="40" y="40" width="432" height="432" rx="96" fill="#141419" stroke="#22222A" stroke-width="8"/>
+  <path d="M128 344V168h72c40 0 64 20 64 52 0 24-13 41-35 48l45 76h-46l-40-70h-26v70h-34zm34-99h36c21 0 32-9 32-25s-11-24-32-24h-36v49zm158 99v-34h46v-78h-46v-34h80v112h32v34h-112z" fill="#00D1FF"/>
+</svg>
