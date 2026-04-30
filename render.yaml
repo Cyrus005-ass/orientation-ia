@@ -1,0 +1,25 @@
+﻿services:
+  - type: web
+    name: orientation-api
+    env: python
+    rootDir: Desktop/orientation-ia
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn api_server:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: API_TOKEN
+        generateValue: true
+      - key: DATABASE_URL
+        sync: false
+
+  - type: web
+    name: orientation-web
+    env: node
+    rootDir: Desktop/orientation-ia
+    buildCommand: cd web && npm ci && npm run build
+    startCommand: cd web && npm start
+    envVars:
+      - key: NEXT_PUBLIC_API_URL
+        fromService:
+          type: web
+          name: orientation-api
+          property: host
