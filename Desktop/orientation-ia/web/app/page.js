@@ -4,7 +4,12 @@
 import { useEffect, useState } from 'react';
 
 const API_BASE_RAW = process.env.NEXT_PUBLIC_API_URL || '';
-const API_BASE = API_BASE_RAW ? (API_BASE_RAW.startsWith('http') ? API_BASE_RAW : `https://${API_BASE_RAW}`) : '';
+const API_BASE_FALLBACK = process.env.NODE_ENV === 'production' ? 'orientation-api.onrender.com' : '';
+const API_BASE = (API_BASE_RAW || API_BASE_FALLBACK)
+  ? ((API_BASE_RAW || API_BASE_FALLBACK).startsWith('http')
+      ? (API_BASE_RAW || API_BASE_FALLBACK)
+      : `https://${API_BASE_RAW || API_BASE_FALLBACK}`)
+  : '';
 
 const money = (value) => {
   if (value === undefined || value === null || value === '') return '--';
